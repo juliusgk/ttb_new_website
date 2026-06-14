@@ -32,17 +32,15 @@ jobs:
 
       - run: bun run build
 
-      - name: Prepare pages output
-        run: |
-          cp .output/public/index.html .output/public/404.html 2>/dev/null || true
-          echo "transatlantic-talent-bridge.com" > .output/public/CNAME
-          touch .output/public/.nojekyll
-          echo "Contents of .output/public:"
-          find .output/public -type f | head -30
+      - name: Prerender routes to static HTML
+        run: node scripts/prerender.mjs
+
+      - name: Show output
+        run: find _site -type f | head -30
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .output/public
+          path: _site
 
   deploy:
     environment:

@@ -10,11 +10,5 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
-  nitro: {
-    preset: "github-pages",
-    prerender: {
-      routes: ["/", "/employers", "/recruitment-agency", "/impressum"],
-      crawlLinks: true,
-    },
-  },
+  nitro: true,
 });
