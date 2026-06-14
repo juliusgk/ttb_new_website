@@ -31,27 +31,18 @@ jobs:
       - run: bun install --frozen-lockfile
 
       - run: bun run build
-        env:
-          NITRO_PRESET: github-pages
 
-      - name: Find and prepare output
+      - name: Prepare pages output
         run: |
-          # Nitro github-pages preset outputs to .output/public
-          if [ -d ".output/public" ]; then
-            OUTPUT_DIR=".output/public"
-          else
-            OUTPUT_DIR="dist/client"
-          fi
-          echo "OUTPUT_DIR=$OUTPUT_DIR" >> "$GITHUB_ENV"
-          cp "$OUTPUT_DIR/index.html" "$OUTPUT_DIR/404.html" 2>/dev/null || true
-          echo "transatlantic-talent-bridge.com" > "$OUTPUT_DIR/CNAME"
-          touch "$OUTPUT_DIR/.nojekyll"
-          echo "Deploying from: $OUTPUT_DIR"
-          ls -la "$OUTPUT_DIR"
+          cp .output/public/index.html .output/public/404.html 2>/dev/null || true
+          echo "transatlantic-talent-bridge.com" > .output/public/CNAME
+          touch .output/public/.nojekyll
+          echo "Contents of .output/public:"
+          find .output/public -type f | head -30
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ env.OUTPUT_DIR }}
+          path: .output/public
 
   deploy:
     environment:

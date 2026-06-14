@@ -8,12 +8,13 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
   tanstackStart: {
-    server: {
-      entry: "server",
-      prerender: {
-        routes: ["/", "/employers", "/recruitment-agency", "/impressum"],
-        crawlLinks: true,
-      },
+    server: { entry: "server" },
+  },
+  nitro: {
+    preset: "github-pages",
+    prerender: {
+      routes: ["/", "/employers", "/recruitment-agency", "/impressum"],
+      crawlLinks: true,
     },
   },
 });
