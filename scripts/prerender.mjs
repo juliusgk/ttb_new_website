@@ -1,18 +1,31 @@
-import { readFileSync, writeFileSync, mkdirSync, cpSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
 const routes = ["/", "/employers", "/recruitment-agency", "/impressum"];
 const outDir = "_site";
 
 async function main() {
-  // Import the built Cloudflare Worker module
-  const worker = await import("../dist/server/server.js");
+  // The Nitro cloudflare-module build outputs to .output/server/index.mjs
+  const serverPath = ".output/server/index.mjs";
+  if (!existsSync(serverPath)) {
+    throw new Error(`Server entry not found at ${serverPath}`);
+  }
+
+  const worker = await import(`../${serverPath}`);
+  // Cloudflare Worker modules export default { fetch }
   const handler = worker.default?.default ?? worker.default;
+
+  if (!handler?.fetch) {
+    throw new Error("Could not find fetch handler in worker module");
+  }
 
   mkdirSync(outDir, { recursive: true });
 
-  // Copy client assets
-  cpSync("dist/client/assets", join(outDir, "assets"), { recursive: true });
+  // Copy client assets from .output/public
+  if (existsSync(".output/public/assets")) {
+    cpSync(".output/public/assets", join(outDir, "assets"), { recursive: true });
+    console.log("Copied client assets from .output/public/assets");
+  }
 
   // Prerender each route
   for (const route of routes) {
@@ -20,16 +33,18 @@ async function main() {
     console.log(`Prerendering ${route}...`);
     try {
       const request = new Request(url);
-      const response = await handler.fetch(request, {}, { waitUntil: () => {} });
+      const ctx = { waitUntil: () => {}, passThroughOnException: () => {} };
+      const response = await handler.fetch(request, {}, ctx);
       const html = await response.text();
 
-      if (response.status === 200) {
+      if (response.status >= 200 && response.status < 400) {
         const dir = join(outDir, route === "/" ? "" : route);
         mkdirSync(dir, { recursive: true });
         writeFileSync(join(dir, "index.html"), html);
-        console.log(`  ✓ ${route} (${html.length} bytes)`);
+        console.log(`  ✓ ${route} (${html.length} bytes, status ${response.status})`);
       } else {
         console.log(`  ✗ ${route} returned ${response.status}`);
+        console.log(`    Body: ${html.substring(0, 200)}`);
       }
     } catch (err) {
       console.error(`  ✗ ${route} failed:`, err.message);
@@ -40,6 +55,7 @@ async function main() {
   try {
     const indexHtml = readFileSync(join(outDir, "index.html"), "utf8");
     writeFileSync(join(outDir, "404.html"), indexHtml);
+    console.log("Created 404.html fallback");
   } catch {}
 
   // GitHub Pages config
