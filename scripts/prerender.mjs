@@ -21,10 +21,10 @@ async function main() {
 
   mkdirSync(outDir, { recursive: true });
 
-  // Copy client assets from .output/public
-  if (existsSync(".output/public/assets")) {
-    cpSync(".output/public/assets", join(outDir, "assets"), { recursive: true });
-    console.log("Copied client assets from .output/public/assets");
+  // Copy all static files from .output/public (client JS/CSS + public/ assets)
+  if (existsSync(".output/public")) {
+    cpSync(".output/public", outDir, { recursive: true });
+    console.log("Copied static files from .output/public");
   }
 
   // Prerender each route

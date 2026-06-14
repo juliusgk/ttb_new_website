@@ -1,0 +1,41 @@
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="500" height="500" fill="#EDEDED"/>
+
+  <defs>
+    <!-- Clip stripes to the interior of the arch -->
+    <clipPath id="archInner">
+      <ellipse cx="180" cy="256" rx="38" ry="25"/>
+    </clipPath>
+  </defs>
+
+  <!-- Accent circle -->
+  <circle cx="222" cy="214" r="13" fill="#46A4D6"/>
+
+  <!-- Light-blue vertical stripes inside the arch -->
+  <g clip-path="url(#archInner)" fill="#46A4D6">
+    <rect x="153" y="226" width="6" height="32"/>
+    <rect x="170" y="226" width="6" height="32"/>
+    <rect x="188" y="226" width="6" height="32"/>
+    <rect x="205" y="226" width="6" height="32"/>
+  </g>
+
+  <!-- Navy arch band (top-half ring) -->
+  <path d="M 129 256 A 51 37 0 0 1 231 256 L 218 256 A 38 25 0 0 0 142 256 Z" fill="#07223B"/>
+
+  <!-- Bridge deck -->
+  <rect x="128" y="254" width="105" height="10" fill="#07223B"/>
+  <!-- Deck end caps -->
+  <rect x="128" y="254" width="7" height="13" fill="#07223B"/>
+  <rect x="226" y="254" width="7" height="13" fill="#07223B"/>
+
+  <!-- Lower piers + under-arch opening -->
+  <path d="M 133 263 L 133 291 L 150 291 L 150 277 Q 151 264 179 263 Q 208 264 210 277 L 210 291 L 229 291 L 229 263 Z" fill="#07223B"/>
+
+  <!-- Text -->
+  <g font-family="Montserrat, Poppins, 'Segoe UI', Arial, sans-serif" font-weight="700">
+    <text x="250" y="223" font-size="27" fill="#07223B">Transatlantic</text>
+    <text x="250" y="256" font-size="27" fill="#46A4D6">Talent</text>
+    <text x="250" y="289" font-size="27" fill="#07223B">Bridge</text>
+  </g>
+</svg>
